@@ -261,7 +261,7 @@ public class RCTMqtt implements MqttCallbackExtended {
   
     // offlineBuffer設定
     private DisconnectedBufferOptions getDisconnectedBufferOptions() {
-        DisconnectedBufferOptions disconnectedBufferOptions = DisconnectedBufferOptions();
+        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
         disconnectedBufferOptions.isBufferEnabled(true);
         disconnectedBufferOptions.setBufferSize(100000);
         disconnectedBufferOptions.isPersistBuffer(true);
