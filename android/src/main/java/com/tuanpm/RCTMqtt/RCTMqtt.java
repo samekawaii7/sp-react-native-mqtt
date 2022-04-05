@@ -262,10 +262,10 @@ public class RCTMqtt implements MqttCallbackExtended {
     // offlineBuffer設定
     private DisconnectedBufferOptions getDisconnectedBufferOptions() {
         DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-        disconnectedBufferOptions.isBufferEnabled(true);
+        disconnectedBufferOptions.setBufferEnabled(true);
         disconnectedBufferOptions.setBufferSize(100000);
-        disconnectedBufferOptions.isPersistBuffer(true);
-        disconnectedBufferOptions.isDeleteOldestMessages(false);
+        disconnectedBufferOptions.setPersistBuffer(true);
+        disconnectedBufferOptions.setDeleteOldestMessages(false);
         return disconnectedBufferOptions;
     }
 
@@ -303,7 +303,7 @@ public class RCTMqtt implements MqttCallbackExtended {
                     params.putString("message", errorDescription);
                     sendEvent(reactContext, "mqtt_events", params);
 
-                    if(client.isConnected) {
+                    if(client.isConnected()) {
                         client.setBufferOpts(getDisconnectedBufferOptions());
                     }
                 }
