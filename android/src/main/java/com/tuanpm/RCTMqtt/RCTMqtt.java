@@ -23,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -257,6 +258,16 @@ public class RCTMqtt implements MqttCallbackExtended {
 		//log("isSubbed. checking is topic: "+ topic);
 		return topics.containsKey(topic);
 	}
+  
+    // offlineBuffer設定
+    private DisconnectedBufferOptions getDisconnectedBufferOptions() {
+        DisconnectedBufferOptions disconnectedBufferOptions = DisconnectedBufferOptions();
+        disconnectedBufferOptions.isBufferEnabled(true);
+        disconnectedBufferOptions.setBufferSize(100000);
+        disconnectedBufferOptions.isPersistBuffer(true);
+        disconnectedBufferOptions.isDeleteOldestMessages(false);
+        return disconnectedBufferOptions;
+    }
 
     public void connect() {
         try {
@@ -280,6 +291,8 @@ public class RCTMqtt implements MqttCallbackExtended {
                         final String topic = iterator.next();
                         subscribe(topic, topics.get(topic));
                     }
+
+                    client.setBufferOpts(getDisconnectedBufferOptions());
                 }
 
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
@@ -289,6 +302,10 @@ public class RCTMqtt implements MqttCallbackExtended {
                             .toString();
                     params.putString("message", errorDescription);
                     sendEvent(reactContext, "mqtt_events", params);
+
+                    if(client.isConnected) {
+                        client.setBufferOpts(getDisconnectedBufferOptions());
+                    }
                 }
             });
         } catch (MqttException e) {
